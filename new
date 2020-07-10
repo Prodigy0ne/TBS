@@ -1,0 +1,43 @@
+#pip install rayptics
+#%matplotlib inline
+import timeit
+import pdb
+from rayoptics.environment import *
+from rayoptics.optical.model_constants import Intfc, Gap, Indx, Tfrm, Zdir # Used to access the image semi-diameter
+
+
+opm = OpticalModel() # create a new OpticalModel
+sm  = opm.seq_model
+osp = opm.optical_spec
+
+osp.pupil = PupilSpec(osp, key=['object', 'pupil'], value=25)
+osp.field_of_view = FieldSpec(osp, key=['object', 'height'], flds=[0.5, 0.0,-.5])  # Additional fields to account for beam width
+osp.spectral_region = WvlSpec([(587.0, 1.0)]) 
+
+opm.radius_mode = True
+
+sm.gaps[0].thi=35 
+
+sm.add_surface([35.0, 6.0, 'N-BK7', 'Schott']) 
+sm.add_surface([-35.0, 6])
+sm.set_stop() # Additional lenses to be added here
+
+def time_func():
+    opm.update_model()
+print("time",timeit.Timer(time_func).timeit(number=100))
+pdb.set_trace()
+
+isdark = False
+layout_plt = plt.figure(FigureClass=InteractiveLayout, opt_model=opm, do_draw_rays=True, do_paraxial_layout=False,
+                        is_dark=isdark).plot()
+
+sm.list_model() # "semi-diameter" of the image displayed here (akin to spot size). 
+
+plt.show() # Running on linux, this is necessary
+
+
+# Get the image height
+for i, sg in enumerate(sm.path()):
+        s = sm.list_surface_and_gap(sg[Intfc], gp=sg[Gap])
+        sd = s[-1]
+print(sd) # This is the image semi-diameter
