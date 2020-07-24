@@ -19,7 +19,7 @@ opm.radius_mode = True
 
 sm.gaps[0].thi=35 
 
-sm.add_surface([35.0, 6.0, 'N-BK7', 'Schott']) 
+sm.add_surface([35.0, 6.0, 'N-BK7', 'Schott']) # Radius, Center thickness, lens type & model
 sm.add_surface([-35.0, 6])
 sm.set_stop() # Additional lenses to be added here
 
@@ -29,8 +29,8 @@ print("time",timeit.Timer(time_func).timeit(number=100))
 #pdb.set_trace() 
 input=np.zeros((8,3),dtype=float)
 output=np.zeros((8,1),dtype=float)
-first_variable=[35.0,200.0]
-second_variable=[4.0,10.0]
+first_variable=[35.0,200.0] #Range for radius of lens (i.e. from 3.50mm to 260mm).
+second_variable=[4.0,10.0] #Range for center thickness (i.e. 1.5mm to 10mm).
 step1=0
 for value1 in first_variable:
     for value2 in second_variable:
@@ -47,7 +47,7 @@ for value1 in first_variable:
         sm.gaps[0].thi=35 
 
         sm.add_surface([value1, value2, 'N-BK7', 'Schott']) 
-        sm.add_surface([-1.0*value1, 75])
+        sm.add_surface([-1.0*value1, 75]) # 75mm = Back focal length (BFL)
         sm.set_stop()
         opm.update_model()
         pdb.set_trace()
